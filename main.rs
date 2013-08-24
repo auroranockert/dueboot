@@ -25,6 +25,7 @@ extern {
 }
 
 #[no_mangle]
+#[export_name="setup"]
 #[fixed_stack_segment]
 pub extern "C" fn core_setup() {
     unsafe {
@@ -34,6 +35,7 @@ pub extern "C" fn core_setup() {
 }
 
 #[no_mangle]
+#[export_name="loop"]
 #[fixed_stack_segment]
 pub extern "C" fn core_loop() {
     unsafe {
