@@ -20,21 +20,18 @@ C_SRCS += hardware/arduino/sam/cores/arduino/cortex_handlers.c hardware/arduino/
 
 CPP_SRCS = hardware/arduino/sam/cores/arduino/cxxabi-compat.cpp hardware/arduino/sam/cores/arduino/IPAddress.cpp hardware/arduino/sam/cores/arduino/main.cpp hardware/arduino/sam/cores/arduino/Print.cpp hardware/arduino/sam/cores/arduino/Reset.cpp hardware/arduino/sam/cores/arduino/RingBuffer.cpp hardware/arduino/sam/cores/arduino/Stream.cpp hardware/arduino/sam/cores/arduino/UARTClass.cpp hardware/arduino/sam/cores/arduino/USARTClass.cpp hardware/arduino/sam/cores/arduino/USB/CDC.cpp hardware/arduino/sam/cores/arduino/USB/HID.cpp hardware/arduino/sam/cores/arduino/USB/USBCore.cpp hardware/arduino/sam/cores/arduino/wiring_pulse.cpp hardware/arduino/sam/cores/arduino/WMath.cpp hardware/arduino/sam/cores/arduino/WString.cpp hardware/arduino/sam/variants/arduino_due_x/variant.cpp
 
-CFLAGS  = -g -O0 -Wall -nostdlib
-CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m3
-CFLAGS += -mfloat-abi=soft
+CFLAGS  = -g -O0 -Wall -nostdlib -mthumb -mcpu=cortex-m3
 CFLAGS += -Ihardware/arduino/sam/system/libsam -Ihardware/arduino/sam/system/CMSIS/CMSIS/Include/
 CFLAGS += -Ihardware/arduino/sam/system/CMSIS/Device/ATMEL/ -Ihardware/arduino/sam/cores/arduino
 CFLAGS += -Ihardware/arduino/sam/variants/arduino_due_x
-CFLAGS += -ffunction-sections -fdata-sections -nostdlib --param max-inline-insns-single=500
-CFLAGS += -fno-exceptions -Dprintf=iprintf
+CFLAGS += -ffunction-sections -fdata-sections -Dprintf=iprintf
 CFLAGS += -DF_CPU=84000000L -DARDUINO=151 -D__SAM3X8E__ -DUSB_PID=0x003e -Dprintf=iprintf
 
 CXXFLAGS = -fno-rtti -fno-exceptions
 
 LDFLAGS  = -g -O0 -Wl,--gc-sections -mcpu=cortex-m3 
 LDFLAGS += -Thardware/arduino/sam/variants/arduino_due_x/linker_scripts/gcc/flash.ld
-LDFLAGS += -L$(PWD) -lm -lgcc -mthumb -Wl,--cref -Wl,--check-sections -Wl,--gc-sections
+LDFLAGS += -L$(PWD) -lm -lgcc -mthumb -Wl,--check-sections -Wl,--gc-sections
 LDFLAGS += -Wl,--entry=Reset_Handler -Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align
 LDFLAGS += -Wl,--warn-unresolved-symbols -Wl,--start-group
 LDFLAGS += $(PROJ_NAME).a hardware/arduino/sam/cores/arduino/syscalls_sam3.c.o -lc
@@ -52,12 +49,10 @@ proj: $(PROJ_NAME).elf
 
 core.s: main.rs
 	$(RUSTC) --target arm-linux-noeabi --lib -c main.rs -S -o main.ll --emit-llvm -A non-uppercase-statics -A unused-imports
-	sed -i .1 's/fixedstacksegment //g' main.ll
-	sed -i .2 's/@core_loop()/@loop()/g' main.ll
-	sed -i .3 's/@core_setup()/@setup()/g' main.ll
-	sed -i .4 's/arm-unknown-linux-gnueabihf/arm-none-eabi/g' main.ll
+	sed -i .1 's/@core_loop()/@loop()/g' main.ll
+	sed -i .2 's/@core_setup()/@setup()/g' main.ll
+	sed -i .3 's/arm-unknown-linux-gnueabihf/arm-none-eabi/g' main.ll
 	$(LLC) -march=thumb -mattr=+thumb2 -mcpu=cortex-m3 --float-abi=soft -asm-verbose main.ll -o=core.s
-	sed -i .1 's/.note.rustc,"aw"/.note.rustc,"a"/g' core.s
 
 %.cpp.o: %.cpp
 	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $< -o $@
