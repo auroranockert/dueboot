@@ -1,0 +1,20 @@
+
+This package contains the GNU compiler toolchain targeting the ARM EABI
+platform used by the Maple IDE distributed by LeafLabs (http://leaflabs.com).
+This version of the toolchain is maintained by CodeSourcery
+(http://codesourcery.com). See the enclosed "Getting Started" PDF file for full
+licensing information and more about CodeSourcery.
+
+This package does NOT include the "Sourcery G++ Debug Sprite for ARM" or
+"CodeSourcery Common Startup Code Sequence" proprietary software components;
+to the best of our knowledge all of the binaries in this package are under GPL
+or BSD free/open software licenses. Please note that CodeSourcery generously
+releases their improvements to these compiler tools but does NOT promise free
+support for them; direct your questions and bug fixes to the LeafLabs team
+(http://leaflabs.com/contact/).
+
+In the interest of space conservation this package does not include full 
+documentation or source code; both can be downloaded as part of a "src" tarball
+from our mirror at http://static.leaflabs.com/pub/codesourcery/ or directly 
+from CodeSourcery at http://www.codesourcery.com/sgpp/lite/arm/.
+
