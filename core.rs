@@ -1,6 +1,5 @@
 #[allow(ctypes)];
 #[no_std];
-#[no_core];
 
 #[link(name = "blinky", vers = "0.1", author = "Jens Nockert")];
 
@@ -8,7 +7,7 @@ use arduino::*;
 
 mod arduino;
 
-static LED:u32  = 13;
+static LED:u32 = 13;
 
 #[no_mangle]
 #[fixed_stack_segment]
