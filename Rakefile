@@ -23,7 +23,7 @@ CPP_SRCS = []
 
 C_SRCS.push('hardware/arduino/sam/cores/arduino/cortex_handlers.c', 'hardware/arduino/sam/cores/arduino/hooks.c', 'hardware/arduino/sam/cores/arduino/itoa.c', 'hardware/arduino/sam/cores/arduino/WInterrupts.c', 'hardware/arduino/sam/cores/arduino/wiring.c', 'hardware/arduino/sam/cores/arduino/wiring_analog.c', 'hardware/arduino/sam/cores/arduino/wiring_digital.c', 'hardware/arduino/sam/cores/arduino/wiring_shift.c', 'hardware/arduino/sam/cores/arduino/iar_calls_sam3.c', 'hardware/arduino/sam/cores/arduino/syscalls_sam3.c')
 
-CPP_SRCS.push('hardware/arduino/sam/cores/arduino/cxxabi-compat.cpp', 'hardware/arduino/sam/cores/arduino/IPAddress.cpp', 'hardware/arduino/sam/cores/arduino/main.cpp', 'hardware/arduino/sam/cores/arduino/Print.cpp', 'hardware/arduino/sam/cores/arduino/Reset.cpp', 'hardware/arduino/sam/cores/arduino/RingBuffer.cpp', 'hardware/arduino/sam/cores/arduino/Stream.cpp', 'hardware/arduino/sam/cores/arduino/UARTClass.cpp', 'hardware/arduino/sam/cores/arduino/USARTClass.cpp', 'hardware/arduino/sam/cores/arduino/USB/CDC.cpp', 'hardware/arduino/sam/cores/arduino/USB/HID.cpp', 'hardware/arduino/sam/cores/arduino/USB/USBCore.cpp', 'hardware/arduino/sam/cores/arduino/wiring_pulse.cpp', 'hardware/arduino/sam/cores/arduino/WMath.cpp', 'hardware/arduino/sam/cores/arduino/WString.cpp', 'hardware/arduino/sam/variants/arduino_due_x/variant.cpp')
+CPP_SRCS.push('hardware/arduino/sam/cores/arduino/cxxabi-compat.cpp', 'hardware/arduino/sam/cores/arduino/IPAddress.cpp', 'hardware/arduino/sam/cores/arduino/Print.cpp', 'hardware/arduino/sam/cores/arduino/Reset.cpp', 'hardware/arduino/sam/cores/arduino/RingBuffer.cpp', 'hardware/arduino/sam/cores/arduino/Stream.cpp', 'hardware/arduino/sam/cores/arduino/UARTClass.cpp', 'hardware/arduino/sam/cores/arduino/USARTClass.cpp', 'hardware/arduino/sam/cores/arduino/USB/CDC.cpp', 'hardware/arduino/sam/cores/arduino/USB/HID.cpp', 'hardware/arduino/sam/cores/arduino/USB/USBCore.cpp', 'hardware/arduino/sam/cores/arduino/wiring_pulse.cpp', 'hardware/arduino/sam/cores/arduino/WMath.cpp', 'hardware/arduino/sam/cores/arduino/WString.cpp', 'hardware/arduino/sam/variants/arduino_due_x/variant.cpp')
 
 @cflags = "-g -O0 -Wall -nostdlib -mthumb -mcpu=cortex-m3"
 @cflags += " -Ihardware/arduino/sam/system/libsam -Ihardware/arduino/sam/system/CMSIS/CMSIS/Include/"
@@ -61,7 +61,7 @@ end
 
 directory 'output'
 
-file 'output/core.s' => RUST_SRC do
+file 'output/core.s' => [RUST_SRC, 'arduino.rs', 'output'] do
   sh "#{RUSTC} --target arm-linux-noeabi --lib -c #{RUST_SRC} -S -o output/main.ll --emit-llvm -A non-uppercase-statics -A unused-imports"
   sh "sed -i .1 's/@core_loop()/@loop()/g' output/main.ll"
   sh "sed -i .2 's/@core_setup()/@setup()/g' output/main.ll"

@@ -4,42 +4,32 @@
 
 #[link(name = "blinky", vers = "0.1", author = "Jens Nockert")];
 
+use arduino::*;
 use zero::std_types::*;
+
+mod arduino;
 
 mod zero {
   pub mod std_types;
   pub mod zero;
 }
 
-static OUTPUT:u8 = 0x01;
-
-static LOW:u8  = 0x00;
-static HIGH:u8 = 0x01;
-
-static LED:u8  = 13;
-
-extern {
-    fn pinMode(pin:u8, mode:u8);
-    fn delay(ms:u32);
-    fn digitalWrite(pin:u8, value:u8);
-}
+static LED:u32  = 13;
 
 #[no_mangle]
 #[fixed_stack_segment]
-pub extern "C" fn core_setup() {
+pub extern "C" fn main() {
     unsafe {
+        init();
+        delay(1);
         pinMode(LED, OUTPUT);
-        digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
-    }
-}
+        digitalWrite(LED, LOW);
 
-#[no_mangle]
-#[fixed_stack_segment]
-pub extern "C" fn core_loop() {
-    unsafe {
-        digitalWrite(LED, HIGH);   // turn the LED on (HIGH is the voltage level)
-        delay(1000);
-        digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
-        delay(100);
+        loop {
+            digitalWrite(LED, HIGH);   // turn the LED on (HIGH is the voltage level)
+            delay(1000);
+            digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
+            delay(100);
+        }
     }
 }
