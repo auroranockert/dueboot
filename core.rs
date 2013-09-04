@@ -5,14 +5,8 @@
 #[link(name = "blinky", vers = "0.1", author = "Jens Nockert")];
 
 use arduino::*;
-use zero::std_types::*;
 
 mod arduino;
-
-mod zero {
-  pub mod std_types;
-  pub mod zero;
-}
 
 static LED:u32  = 13;
 

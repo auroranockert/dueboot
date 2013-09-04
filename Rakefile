@@ -14,7 +14,7 @@ CC      = "hardware/tools/g++_arm_none_eabi/bin/arm-none-eabi-gcc"
 CXX     = "hardware/tools/g++_arm_none_eabi/bin/arm-none-eabi-g++"
 OBJCOPY = "hardware/tools/g++_arm_none_eabi/bin/arm-none-eabi-objcopy"
 
-C_SRCS = ['zero/zero.c']
+C_SRCS = []
 CPP_SRCS = []
 
 # ----------------------------------------------------------------------
@@ -63,9 +63,7 @@ directory 'output'
 
 file 'output/core.s' => [RUST_SRC, 'arduino.rs', 'output'] do
   sh "#{RUSTC} --target arm-linux-noeabi --lib -c #{RUST_SRC} -S -o output/main.ll --emit-llvm -A non-uppercase-statics -A unused-imports"
-  sh "sed -i .1 's/@core_loop()/@loop()/g' output/main.ll"
-  sh "sed -i .2 's/@core_setup()/@setup()/g' output/main.ll"
-  sh "sed -i .3 's/arm-unknown-linux-gnueabihf/arm-none-eabi/g' output/main.ll"
+  sh "sed -i .1 's/arm-unknown-linux-gnueabihf/arm-none-eabi/g' output/main.ll"
   sh "#{LLC} -march=thumb -mattr=+thumb2 -mcpu=cortex-m3 --float-abi=soft -asm-verbose output/main.ll -o=output/core.s"
 end
 
