@@ -38,11 +38,8 @@ extern {
     pub fn delay(ms:u32);
     pub fn delayMicroseconds(us:u32);
 
-    // TODO: attachInterrupt
-    // TODO: detachInterrupt
-
-    // TODO: interrupts() -> __enable_irq()
-    // noInterrupts() -> __disable_irq()
+    pub fn attachInterrupt(pin:u32, callback:extern "C" fn(), mode:u32);
+    pub fn detachInterrupt(pin:u32);
 }
 
 #[inline(always)]
