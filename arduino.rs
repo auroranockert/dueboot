@@ -44,3 +44,13 @@ extern {
     // TODO: interrupts() -> __enable_irq()
     // noInterrupts() -> __disable_irq()
 }
+
+#[inline(always)]
+pub unsafe fn interrupts() {
+    asm!("CPSIE i");
+}
+
+#[inline(always)]
+pub unsafe fn noInterrupts() {
+    asm!("CPSID i");
+}
