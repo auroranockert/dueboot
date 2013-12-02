@@ -1,28 +1,36 @@
+#[feature(asm)];
+
 #[allow(ctypes)];
 #[no_std];
 
 #[link(name = "blinky", vers = "0.1", author = "Jens Nockert")];
 
-use arduino::*;
+use arduino::{init, delay, pinMode, digitalWrite, analogWrite, LOW, HIGH, OUTPUT};
 
 mod arduino;
 
+static PWM:u32 = 2;
 static LED:u32 = 13;
 
+static PWM_LOW:u32 = 0;
+static PWM_HIGH:u32 = 16;
+
 #[no_mangle]
-#[fixed_stack_segment]
 pub extern "C" fn main() {
     unsafe {
         init();
         delay(1);
         pinMode(LED, OUTPUT);
         digitalWrite(LED, LOW);
+        analogWrite(PWM, PWM_LOW);
 
         loop {
-            digitalWrite(LED, HIGH);   // turn the LED on (HIGH is the voltage level)
-            delay(1000);
-            digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
+            analogWrite(PWM, PWM_HIGH);
+            digitalWrite(LED, HIGH);
             delay(100);
+            analogWrite(PWM, PWM_LOW);
+            digitalWrite(LED, LOW);
+            delay(900);
         }
     }
 }
