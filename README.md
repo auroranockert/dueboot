@@ -6,15 +6,15 @@ Based on https://github.com/neykov/armboot, and is a template for Arduino Due pr
 Compiling
 ---------
 
-Modify the Makefile/flash.rb with your paths and ports, and then "make burn" to upload to the Arduino.
+Modify the Rakefile with your paths and ports, and then "rake burn" to upload to the Arduino.
 
 
 Structure
 ---------
 
-    main.rs - sample program (blinks the led of the Arduino board)
+    core.rs - sample program (blinks the led of the Arduino board)
+    arduino.rs - extern stubs for the core Arduino libraries
     hardware/ - from a random Arduino IDE for OS X
-    zero/ - zero.rs and additional C stubs
 
 
 Credits
