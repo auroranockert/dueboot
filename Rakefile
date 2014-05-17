@@ -70,8 +70,10 @@ end
 directory 'output'
 
 file 'output/core.s' => [RUST_SRC, 'arduino.rs', 'output'] do
-  sh "#{RUSTC} --target arm-unknown-linux-gnueabihf --lib -c #{RUST_SRC} -S -o output/main.ll --emit-llvm -A non-uppercase-statics -A unused-imports"
+  sh "#{RUSTC} --target arm-unknown-linux-gnueabihf --crate-type=lib --emit=ir -o output/main.ll -A non-uppercase-statics -A unused-imports #{RUST_SRC}"
   sh "sed -i .1 's/arm-unknown-linux-gnueabihf/arm-none-eabi/g' output/main.ll"
+	# This prevents an error: invalid use of function-only attribute
+  sh "sed -i .1 's/nocapture readonly/nocapture/g' output/main.ll"
   sh "#{LLC} -march=thumb -mattr=+thumb2 -mcpu=cortex-m3 --float-abi=soft -asm-verbose output/main.ll -o=output/core.s"
 end
 

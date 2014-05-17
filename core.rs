@@ -1,9 +1,9 @@
-#[feature(asm)];
+#![feature(asm)]
 
-#[allow(ctypes)];
-#[no_std];
+#![allow(ctypes)]
+#![no_std]
 
-#[link(name = "blinky", vers = "0.1", author = "Jens Nockert")];
+#![crate_id = "blinky#0.1"]
 
 use arduino::{init, delay, pinMode, digitalWrite, analogWrite, LOW, HIGH, OUTPUT};
 
@@ -16,7 +16,7 @@ static PWM_LOW:u32 = 0;
 static PWM_HIGH:u32 = 16;
 
 #[no_mangle]
-pub extern "C" fn main() {
+pub fn main() {
     unsafe {
         init();
         delay(1);
