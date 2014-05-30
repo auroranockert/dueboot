@@ -17,20 +17,18 @@ static PWM_HIGH:u32 = 16;
 
 #[no_mangle]
 pub fn main() {
-    unsafe {
-        init();
-        delay(1);
-        pinMode(LED, OUTPUT);
-        digitalWrite(LED, LOW);
-        analogWrite(PWM, PWM_LOW);
+	init();
+	delay(1);
+	pinMode(LED, OUTPUT);
+	digitalWrite(LED, LOW);
+	analogWrite(PWM, PWM_LOW);
 
-        loop {
-            analogWrite(PWM, PWM_HIGH);
-            digitalWrite(LED, HIGH);
-            delay(100);
-            analogWrite(PWM, PWM_LOW);
-            digitalWrite(LED, LOW);
-            delay(900);
-        }
-    }
+	loop {
+		analogWrite(PWM, PWM_HIGH);
+		digitalWrite(LED, HIGH);
+		delay(100);
+		analogWrite(PWM, PWM_LOW);
+		digitalWrite(LED, LOW);
+		delay(900);
+	}
 }
