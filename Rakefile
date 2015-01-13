@@ -1,8 +1,8 @@
-ARDUINO = '/Users/Jens/Applications/Arduino\ 1.5.5.app/Contents/Resources/Java'
-RUSTC = "#{ENV['HOME']}/.local/bin/rustc"
-LLC   = "#{ENV['HOME']}/Code/Git/rust2/x86_64-apple-darwin/llvm/Release+Asserts/bin/llc"
+ARDUINO = '/Applications/Arduino\\ 1.5.7.app/Contents/Resources/Java'
+RUSTC   = '/usr/local/bin/rustc'
+LLC     = '/usr/local/Cellar/llvm35-with-arm/3.5.0/bin/llc-3.5'
 
-PORT = "tty.usbmodem411"
+PORT = ENV['ARDUINO_DUE_PORT'] || "tty.usbmodemfd1421"
 
 RUST_SRC = 'core.rs'
 
@@ -18,10 +18,10 @@ USR_INCLUDES = []
 # Normally you really shouldn't need to change anything below this line!
 # ----------------------------------------------------------------------
 
-AR      = "#{ARDUINO}/hardware/tools/g++_arm_none_eabi/bin/arm-none-eabi-ar"
-CC      = "#{ARDUINO}/hardware/tools/g++_arm_none_eabi/bin/arm-none-eabi-gcc"
-CXX     = "#{ARDUINO}/hardware/tools/g++_arm_none_eabi/bin/arm-none-eabi-g++"
-OBJCOPY = "#{ARDUINO}/hardware/tools/g++_arm_none_eabi/bin/arm-none-eabi-objcopy"
+AR      = "#{ARDUINO}/hardware/tools/gcc-arm-none-eabi-4.8.3-2014q1/bin/arm-none-eabi-ar"
+CC      = "#{ARDUINO}/hardware/tools/gcc-arm-none-eabi-4.8.3-2014q1/bin/arm-none-eabi-gcc"
+CXX     = "#{ARDUINO}/hardware/tools/gcc-arm-none-eabi-4.8.3-2014q1/bin/arm-none-eabi-g++"
+OBJCOPY = "#{ARDUINO}/hardware/tools/gcc-arm-none-eabi-4.8.3-2014q1/bin/arm-none-eabi-objcopy"
 
 C_SRCS = ['hardware/arduino/sam/cores/arduino/cortex_handlers.c', 'hardware/arduino/sam/cores/arduino/hooks.c', 'hardware/arduino/sam/cores/arduino/itoa.c', 'hardware/arduino/sam/cores/arduino/WInterrupts.c', 'hardware/arduino/sam/cores/arduino/wiring.c', 'hardware/arduino/sam/cores/arduino/wiring_analog.c', 'hardware/arduino/sam/cores/arduino/wiring_digital.c', 'hardware/arduino/sam/cores/arduino/wiring_shift.c', 'hardware/arduino/sam/cores/arduino/iar_calls_sam3.c', 'hardware/arduino/sam/cores/arduino/syscalls_sam3.c'] + USR_C_SRCS
 
@@ -59,20 +59,20 @@ task :clean do
 end
 
 task :flash => :core do
-  require 'serialport'
-
-  SerialPort.open("/dev/#{PORT}", 1200) {|sp| puts "Reset Board" }
-
-  # Upload to Board
+  # Upload to Programming Port
+  if ENV['DUE_PORT'] != 'native'
+    require 'SerialPort'
+    SerialPort.open("/dev/#{PORT}", 1200) {|sp| puts "Reset Board" }
+  end
   sh "#{ARDUINO}/hardware/tools/bossac --port=#{PORT} -U false -e -w -v -b output/core.bin -R"
 end
 
 directory 'output'
 
 file 'output/core.s' => [RUST_SRC, 'arduino.rs', 'output'] do
-  sh "#{RUSTC} --target arm-unknown-linux-gnueabihf --crate-type=lib --emit=ir -o output/main.ll -A non-uppercase-statics -A unused-imports #{RUST_SRC}"
+  sh "#{RUSTC} --target arm-unknown-linux-gnueabihf --crate-type=lib --emit=llvm-ir -C no-stack-check -o output/main.ll -A non-upper-case-globals -A unused-imports -A dead-code -A non-snake-case -v #{RUST_SRC}"
   sh "sed -i .1 's/arm-unknown-linux-gnueabihf/arm-none-eabi/g' output/main.ll"
-	# This prevents an error: invalid use of function-only attribute
+  # This prevents an error: invalid use of function-only attribute
   sh "sed -i .1 's/nocapture readonly/nocapture/g' output/main.ll"
   sh "#{LLC} -march=thumb -mattr=+thumb2 -mcpu=cortex-m3 --float-abi=soft -asm-verbose output/main.ll -o=output/core.s"
 end
