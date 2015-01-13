@@ -60,6 +60,10 @@ end
 
 task :flash => :core do
   # Upload to Programming Port
+  if ENV['DUE_PORT'] != 'native'
+    require 'SerialPort'
+    SerialPort.open("/dev/#{PORT}", 1200) {|sp| puts "Reset Board" }
+  end
   sh "#{ARDUINO}/hardware/tools/bossac --port=#{PORT} -U false -e -w -v -b output/core.bin -R"
 end
 
