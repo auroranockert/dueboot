@@ -1,19 +1,26 @@
 #![feature(asm)]
 #![feature(lang_items)]
+#![feature(no_std)]
 
 #![no_std]
 
 use arduino::{init, delay, pinMode, digitalWrite, analogWrite, LOW, HIGH, OUTPUT};
 mod arduino;
 
+trait MarkerTrait : PhantomFn<Self> { }
+impl<T: ?Sized> MarkerTrait for T { }
+
+#[lang = "phantom_fn"]
+trait PhantomFn<A:?Sized,R:?Sized=()> { }
+
 #[lang="sized"]
-trait Sized {}
+trait Sized : MarkerTrait {}
 
 #[lang="copy"]
-trait Copy {}
+trait Copy : MarkerTrait {}
 
 #[lang="sync"]
-trait Sync {}
+trait Sync : MarkerTrait {}
 
 static PWM:u32 = 2;
 static LED:u32 = 13;
